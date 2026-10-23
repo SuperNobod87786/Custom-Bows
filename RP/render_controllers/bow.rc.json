@@ -18,7 +18,7 @@
                 }
             ],
             "textures": [
-                "(v.has_arrow && q.is_using_item) ? Array.texture[Math.clamp(Math.floor(q.item_in_use_duration / 200 > 0.7 ? q.item_in_use_duration / 200 : 0), 0, 2)] : Texture.standby",
+                "((v.has_arrow || v.is_creative) && q.is_using_item) ? Array.texture[Math.clamp(Math.floor(q.item_in_use_duration / 200 > 0.7 ? q.item_in_use_duration / 200 : 0), 0, 2)] : Texture.standby",
                 "Texture.enchanted"
             ]
         }

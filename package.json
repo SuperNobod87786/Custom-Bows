@@ -1,5 +1,8 @@
 {
   "dependencies": {
-    "@minecraft/server": "^1.19.0"
+    "@minecraft/server": "^2.10.0"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
   }
 }

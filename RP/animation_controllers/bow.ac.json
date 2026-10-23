@@ -9,7 +9,7 @@
                     ],
                     "transitions": [
                         {
-                            "charge": "q.is_using_item && v.has_arrow"
+                            "charge": "q.is_using_item && (v.has_arrow || v.is_creative)"
                         }
                     ]
                 },
@@ -19,7 +19,7 @@
                     ],
                     "transitions": [
                         {
-                            "default": "!q.is_using_item || !v.has_arrow"
+                            "default": "!q.is_using_item || (!v.has_arrow && !v.is_creative)"
                         }
                     ]
                 }

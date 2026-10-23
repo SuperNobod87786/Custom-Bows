@@ -25,7 +25,7 @@ world.afterEvents.itemReleaseUse.subscribe((data) => {
     const enchantable = item.getComponent(ItemEnchantableComponent.componentId);
     if (enchantable?.getEnchantment("power"))
         damage = damage + Math.round((damage / 4) * (enchantable.getEnchantment("power").level + 1));
-    if (player.getGameMode() !== GameMode.creative) {
+    if (player.getGameMode() !== GameMode.Creative) {
         let foundArrow = false;
         for (const id in EquipmentSlot) {
             if (foundArrow)
@@ -99,7 +99,7 @@ world.afterEvents.itemStartUse.subscribe((data) => {
     }
     if (damage === undefined)
         return;
-    if (player.getGameMode() !== GameMode.creative) {
+    if (player.getGameMode() !== GameMode.Creative) {
         let foundArrow = false;
         for (const id in EquipmentSlot) {
             if (foundArrow)
@@ -130,11 +130,11 @@ world.afterEvents.itemStartUse.subscribe((data) => {
 });
 world.afterEvents.entityHurt.subscribe((data) => {
     const projectile = data.damageSource.damagingProjectile;
-    if (!projectile || !projectile.isValid())
+    if (!projectile || !projectile.isValid)
         return;
     if (projectile?.typeId != "custom_bow:arrow")
         return;
-    if (!data.hurtEntity || !data.hurtEntity.isValid())
+    if (!data.hurtEntity || !data.hurtEntity.isValid)
         return;
     const damage = projectile.getDynamicProperty("damage");
     if (damage === undefined)
@@ -172,14 +172,14 @@ function* updateInventory(player) {
 }
 system.runInterval(() => {
     for (const player of world.getAllPlayers()) {
-        if (!player || !player.isValid())
+        if (!player || !player.isValid)
             continue;
         system.runJob(updateInventory(player));
     }
 }, 5);
 function decreaseItemDurability(player, item, amount) {
     const gamemode = player.getGameMode();
-    if (gamemode !== GameMode.survival && gamemode !== GameMode.adventure)
+    if (gamemode !== GameMode.Survival && gamemode !== GameMode.Adventure)
         return item;
     const comp = item.getComponent(ItemDurabilityComponent.componentId);
     if (!comp)
@@ -197,3 +197,27 @@ function decreaseItemDurability(player, item, amount) {
     comp.damage += amount;
     return item;
 }
+world.afterEvents.playerJoin.subscribe((data) => {
+    const player = world.getEntity(data.playerId);
+    if (!player || !player.isValid)
+        return;
+    const gamemode = player.getGameMode();
+    if (gamemode === GameMode.Creative) {
+        player.setProperty("custom_bow:is_creative", true);
+    }
+    else {
+        player.setProperty("custom_bow:is_creative", false);
+    }
+});
+world.afterEvents.playerGameModeChange.subscribe((data) => {
+    const player = data.player;
+    if (!player.isValid)
+        return;
+    const gamemode = data.toGameMode;
+    if (gamemode === GameMode.Creative) {
+        player.setProperty("custom_bow:is_creative", true);
+    }
+    else {
+        player.setProperty("custom_bow:is_creative", false);
+    }
+});

@@ -1,4 +1,4 @@
-import { Enchantment, EntityEquippableComponent, EntityHealthComponent, EntityInventoryComponent, EntityProjectileComponent, EquipmentSlot, GameMode, ItemDurabilityComponent, ItemEnchantableComponent, ItemStack, Player, system, world } from "@minecraft/server";
+import { Enchantment, Entity, EntityEquippableComponent, EntityHealthComponent, EntityInventoryComponent, EntityProjectileComponent, EquipmentSlot, GameMode, ItemDurabilityComponent, ItemEnchantableComponent, ItemStack, Player, system, world } from "@minecraft/server";
 
 world.sendMessage("Custom Bows loaded!")
 
@@ -20,7 +20,7 @@ world.afterEvents.itemReleaseUse.subscribe((data) => {
     if (useDuration < 0.17) return
     const enchantable = item.getComponent(ItemEnchantableComponent.componentId) as ItemEnchantableComponent | undefined
     if (enchantable?.getEnchantment("power")) damage = damage + Math.round((damage / 4) * ((enchantable.getEnchantment("power") as Enchantment).level + 1))
-    if (player.getGameMode() !== GameMode.creative) {
+    if (player.getGameMode() !== GameMode.Creative) {
         let foundArrow = false
         for (const id in EquipmentSlot) {
             if (foundArrow) continue
@@ -78,7 +78,7 @@ world.afterEvents.itemStartUse.subscribe((data) => {
         damage = JSON.parse(tag.split(":")[2]) as number
     }
     if (damage === undefined) return
-    if (player.getGameMode() !== GameMode.creative) {
+    if (player.getGameMode() !== GameMode.Creative) {
         let foundArrow = false
         for (const id in EquipmentSlot) {
             if (foundArrow) continue
@@ -104,9 +104,9 @@ world.afterEvents.itemStartUse.subscribe((data) => {
 
 world.afterEvents.entityHurt.subscribe((data) => {
     const projectile = data.damageSource.damagingProjectile
-    if (!projectile || !projectile.isValid()) return
+    if (!projectile || !projectile.isValid) return
     if (projectile?.typeId != "custom_bow:arrow") return
-    if (!data.hurtEntity || !data.hurtEntity.isValid()) return
+    if (!data.hurtEntity || !data.hurtEntity.isValid) return
     const damage = projectile.getDynamicProperty("damage") as number | undefined
     if (damage === undefined) return
     const comp = data.hurtEntity.getComponent(EntityHealthComponent.componentId) as EntityHealthComponent
@@ -137,14 +137,14 @@ function* updateInventory(player: Player) {
 
 system.runInterval(() => {
     for (const player of world.getAllPlayers()) {
-        if (!player || !player.isValid()) continue
+        if (!player || !player.isValid) continue
         system.runJob(updateInventory(player))
     }
 }, 5)
 
 function decreaseItemDurability(player: Player, item: ItemStack, amount: number): ItemStack | undefined {
     const gamemode = player.getGameMode()
-    if (gamemode !== GameMode.survival && gamemode !== GameMode.adventure) return item
+    if (gamemode !== GameMode.Survival && gamemode !== GameMode.Adventure) return item
     const comp = item.getComponent(ItemDurabilityComponent.componentId) as ItemDurabilityComponent | undefined
     if (!comp) return item
     let chance = 0
@@ -158,3 +158,25 @@ function decreaseItemDurability(player: Player, item: ItemStack, amount: number)
     comp.damage += amount
     return item
 }
+
+world.afterEvents.playerJoin.subscribe((data) => {
+    const player = world.getEntity(data.playerId) as Player
+    if (!player || !player.isValid) return
+    const gamemode: GameMode = player.getGameMode()
+    if (gamemode === GameMode.Creative) {
+        player.setProperty("custom_bow:is_creative", true)
+    } else {
+        player.setProperty("custom_bow:is_creative", false)
+    }
+})
+
+world.afterEvents.playerGameModeChange.subscribe((data) => {
+    const player: Player = data.player;
+    if (!player.isValid) return
+    const gamemode: GameMode = data.toGameMode
+    if (gamemode === GameMode.Creative) {
+        player.setProperty("custom_bow:is_creative", true)
+    } else {
+        player.setProperty("custom_bow:is_creative", false)
+    }
+})

@@ -27,6 +27,7 @@
                 "initialize": ["v.has_arrow = 0.0;", "v.item_name = 'minecraft:arrow';", "v.shake = 0.0;", "v.shake_direction = 0.0;"],
                 "pre_animation": [
                     "v.has_arrow = 0.0;",
+                    "v.is_creative = q.property('custom_bow:is_creative');",
                     "t.val = 0; t.i = 0; loop(27, {t.val = q.is_item_name_any('slot.inventory', t.i, v.item_name); t.val ? {v.has_arrow = 1.0; break;}; t.i = t.i+1;});",
                     "t.val = 0; t.i = 0; loop(9, {t.val = q.is_item_name_any('slot.hotbar', t.i, v.item_name); t.val ? {v.has_arrow = 1.0; break;}; t.i = t.i+1;});",
                     "q.is_item_name_any('slot.weapon.offhand', 0, v.item_name) ? {v.has_arrow = 1.0;} : {v.has_arrow = v.has_arrow;};",
