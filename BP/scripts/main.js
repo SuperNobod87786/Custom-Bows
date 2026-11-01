@@ -1,5 +1,4 @@
-import { EntityEquippableComponent, EntityHealthComponent, EntityInventoryComponent, EntityProjectileComponent, EquipmentSlot, GameMode, ItemDurabilityComponent, ItemEnchantableComponent, system, world } from "@minecraft/server";
-world.sendMessage("Custom Bows loaded!");
+import { EntityEquippableComponent, EntityHealthComponent, EntityInventoryComponent, EntityProjectileComponent, EquipmentSlot, GameMode, ItemDurabilityComponent, ItemEnchantableComponent, ItemStack, Player, system, world } from "@minecraft/server";
 world.afterEvents.itemReleaseUse.subscribe((data) => {
     const player = data.source;
     const equippable = player.getComponent(EntityEquippableComponent.componentId);

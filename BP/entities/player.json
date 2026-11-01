@@ -7,7 +7,7 @@
       "is_spawnable": false,
       "spawn_category": "creature",
       // -----------------------------------------------
-      // This is all vanilla player data. Only entity property ec:is_creative was added to the player entity. This is used to allow the freeze bow animation to work in creative mode.
+      // This is all vanilla player data. Only entity property custom_bow:is_creative was added to the player entity. This is used to allow the custom bow animation to work in creative mode.
       // -----------------------------------------------
       "properties": {
         "custom_bow:is_creative": {
