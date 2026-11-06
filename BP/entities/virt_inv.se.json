@@ -1,0 +1,33 @@
+{
+  "format_version": "1.20.41",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "custom_bow:virt_inv",
+      "is_spawnable": false,
+      "is_summonable": true
+    },
+    "component_groups": {
+    },
+    "components": {
+      "minecraft:collision_box": {
+        "height": 0,
+        "width": 0
+      },
+      "minecraft:inventory": {
+        "additional_slots_per_strength": 0,
+        "can_be_siphoned_from": false,
+        "container_type": "inventory",
+        "inventory_size": 3,
+        "private": true,
+        "restrict_to_owner": true
+      },
+      "minecraft:physics": {
+        "has_collision": false,
+        "has_gravity": false,
+        "push_towards_closest_space": false
+      }
+    },
+    "events": {
+    }
+  }
+}

@@ -2,7 +2,7 @@
   "format_version": "1.21.40",
   "minecraft:entity": {
     "description": {
-      "identifier": "custom_bow:arrow",
+      "identifier": "custom_bow:custom_arrow",
       "is_spawnable": false,
       "is_summonable": true,
       "runtime_identifier": "arrow"
@@ -46,7 +46,7 @@
           "gravity": 0.05,
           "uncertainty_base": 1,
           "uncertainty_multiplier": 0,
-          "anchor": "eye_height",
+          "anchor": "origin",
           "should_bounce": "if_no_damage_dealt",
           "offset": [ 0, -0.1, 0 ]
         },

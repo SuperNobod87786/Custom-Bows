@@ -1,0 +1,11 @@
+{
+  "format_version": "1.20.41",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "custom_bow:virt_inv",
+      "min_engine_version": "1.8.0",
+      "materials": { "default": "entity", "alpha": "entity_alphatest" },
+      "render_controllers": ["controller.render.default"]
+    }
+  }
+}

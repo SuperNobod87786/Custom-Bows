@@ -2,7 +2,7 @@
   "format_version": "1.10.0",
   "minecraft:client_entity": {
     "description": {
-      "identifier": "custom_bow:arrow",
+      "identifier": "custom_bow:custom_arrow",
       "materials": {
         "default": "arrow"
       },

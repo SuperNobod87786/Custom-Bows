@@ -1,5 +1,5 @@
-import { type Enchantment, EntityEquippableComponent, EntityHealthComponent, EntityInventoryComponent, EntityProjectileComponent, EquipmentSlot, GameMode, ItemDurabilityComponent, ItemEnchantableComponent, ItemStack, Player, system, world } from "@minecraft/server";
-
+import { type Vector3, type Enchantment, EntityEquippableComponent, EntityHealthComponent, EntityInventoryComponent, EntityProjectileComponent, EquipmentSlot, GameMode, ItemDurabilityComponent, ItemEnchantableComponent, ItemStack, Player, system, world } from "@minecraft/server";
+import { getTintedArrowType} from "./getTintedArrowType.js";
 world.afterEvents.itemReleaseUse.subscribe((data) => {
     const player = data.source
     const equippable = player.getComponent(EntityEquippableComponent.componentId) as EntityEquippableComponent | undefined
@@ -17,39 +17,52 @@ world.afterEvents.itemReleaseUse.subscribe((data) => {
     const useDuration = ((6000 * 20) - data.useDuration) / 20
     if (useDuration < 0.17) return
     const enchantable = item.getComponent(ItemEnchantableComponent.componentId) as ItemEnchantableComponent | undefined
-    if (enchantable?.getEnchantment("power")) damage = damage + Math.round((damage / 4) * ((enchantable.getEnchantment("power") as Enchantment).level + 1))
-    if (player.getGameMode() !== GameMode.Creative) {
-        let foundArrow = false
-        for (const id in EquipmentSlot) {
+    if (enchantable?.getEnchantment("power")) damage += Math.round((damage / 4) * ((enchantable.getEnchantment("power") as Enchantment).level + 1))
+    
+    let isCreative = false
+    if (player.getGameMode() === GameMode.Creative) {
+        isCreative = true
+    }
+    let foundArrow = false
+    let arrowType: any = "default" // TODO: Change type later
+    for (const id in EquipmentSlot) {
+        if (foundArrow) continue
+        const slot = equippable.getEquipmentSlot(id as EquipmentSlot)
+        const item = slot.getItem()
+        if (item?.typeId !== "minecraft:arrow") continue
+        foundArrow = true
+
+        arrowType = getTintedArrowType(item, player.getHeadLocation())
+
+        if (isCreative) continue
+        if ((item.amount - 1) > 0) {
+            item.amount--
+            slot.setItem(item)
+        } else slot.setItem(undefined)
+    }
+    if (!foundArrow) {
+        const inv = (player.getComponent(EntityInventoryComponent.componentId) as EntityInventoryComponent | undefined)?.container
+        if (!inv) return
+        for (let i = 0; i < inv.size; i++) {
             if (foundArrow) continue
-            const slot = equippable.getEquipmentSlot(id as EquipmentSlot)
-            const item = slot.getItem()
-            if (item?.typeId !== "minecraft:arrow") continue
+            const item = inv.getItem(i)
+            if (!item || item.typeId !== "minecraft:arrow") continue
             foundArrow = true
+
+            arrowType = getTintedArrowType(item, player.getHeadLocation())
+
+            if (isCreative) continue
             if ((item.amount - 1) > 0) {
                 item.amount--
-                slot.setItem(item)
-            } else slot.setItem(undefined)
+                inv.setItem(i, item)
+            } else inv.setItem(i, undefined)
         }
-        if (!foundArrow) {
-            const inv = (player.getComponent(EntityInventoryComponent.componentId) as EntityInventoryComponent | undefined)?.container
-            if (!inv) return
-            for (let i = 0; i < inv.size; i++) {
-                if (foundArrow) continue
-                const item = inv.getItem(i)
-                if (!item || item.typeId !== "minecraft:arrow") continue
-                foundArrow = true
-                if ((item.amount - 1) > 0) {
-                    item.amount--
-                    inv.setItem(i, item)
-                } else inv.setItem(i, undefined)
-            }
-        }
-        if (!foundArrow) return
     }
+    if (!foundArrow && !isCreative) return
+
     mainhand.setItem(decreaseItemDurability(player, item, 1))
     const headLoc = player.getHeadLocation()
-    const arrow = player.dimension.spawnEntity("custom_bow:arrow", { x: headLoc.x, y: 100, z: headLoc.z })
+    const arrow = player.dimension.spawnEntity("minecraft:arrow", { x: headLoc.x, y: 100, z: headLoc.z }) // custom_bow:arrow
     if (enchantable?.getEnchantment("flame")) arrow.setOnFire(999999)
     arrow.setDynamicProperty("damage", (damage * (useDuration > 1 ? 1 : useDuration)))
     arrow.teleport(headLoc)
@@ -60,7 +73,7 @@ world.afterEvents.itemReleaseUse.subscribe((data) => {
     const vel = 4.8 * (useDuration > 1 ? 1 : useDuration)
     comp.shoot({ x: viewDir.x * vel, y: viewDir.y * vel, z: viewDir.z * vel })
     player.dimension.playSound("random.bow", headLoc)
-})
+});
 
 world.afterEvents.itemStartUse.subscribe((data) => {
     const player = data.source
@@ -103,7 +116,7 @@ world.afterEvents.itemStartUse.subscribe((data) => {
 world.afterEvents.entityHurt.subscribe((data) => {
     const projectile = data.damageSource.damagingProjectile
     if (!projectile || !projectile.isValid) return
-    if (projectile?.typeId != "custom_bow:arrow") return
+    if (projectile?.typeId != "minecraft:arrow") return // custom_bow:arrow
     if (!data.hurtEntity || !data.hurtEntity.isValid) return
     const damage = projectile.getDynamicProperty("damage") as number | undefined
     if (damage === undefined) return
